@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Carbon-Friendly Products{% endblock %}
+
+{% block content %}
+<h1>Carbon-Friendly Products</h1>
+<table border="1">
+    <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price (USD)</th>
+        <th>Buy Now</th>
+    </tr>
+    {% for product in products %}
+    <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.price }}</td>
+        <td>
+            <form id="payment-form-{{ product.id }}" method="POST" action="{{ url_for('main.handle_payment') }}">
+                {{ hidden_tag() }}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="product_name" value="{{ product.name }}">
+                <input type="hidden" name="amount" value="{{ product.price }}">
+
+                <!-- Payment Method Selector -->
+                <div class="form-group">
+                    <label for="payment-method-{{ product.id }}" class="form-label">Payment Method</label>
+                    <select name="payment_method" class="form-control" id="payment-method-{{ product.id }}">
+                        <option value="" disabled selected>Select payment method</option>
+                        <option value="card">Credit or Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="mpesa">M-Pesa</option>
+                    </select>
+                </div>
+
+                <!-- PayPal Email Field -->
+                <div class="form-group mb-4" id="paypal-payment-{{ product.id }}" style="display:none;">
+                    <label for="paypal-email-{{ product.id }}" class="form-label">PayPal Email</label>
+                    <input type="email" id="paypal-email-{{ product.id }}" name="paypal_email" class="form-control" placeholder="Enter your PayPal email">
+                </div>
+
+                <!-- M-Pesa Phone Number Field -->
+                <div class="form-group mb-4" id="mpesa-payment-{{ product.id }}" style="display:none;">
+                    <label for="mpesa-phone-{{ product.id }}" class="form-label">M-Pesa Phone Number</label>
+                    <input type="text" id="mpesa-phone-{{ product.id }}" name="mpesa_phone" class="form-control" placeholder="Enter your M-Pesa phone number">
+                </div>
+
+                <!-- Card Payment Fields -->
+                <div class="form-group mb-4" id="card-payment-{{ product.id }}" style="display:none;">
+                    <label for="card-element-{{ product.id }}" class="form-label">Credit or Debit Card</label>
+                    <div id="card-element-{{ product.id }}" class="form-control">
+                        <!-- A Stripe Element will be inserted here. -->
+                    </div>
+                    <div id="card-errors-{{ product.id }}" role="alert" class="mt-2 text-danger"></div>
+                </div>
+
+                <div class="form-group text-center">
+                    <button type="submit" id="submit-button-{{ product.id }}" class="btn btn-success btn-lg w-100">Buy Now</button>
+                </div>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var stripe = Stripe('{{ stripe_publishable_key }}');
+        var csrfToken = '{{ csrf_token() }}';
+
+        {% for product in products %}
+        (function(productId) {
+            var elements = stripe.elements();
+            var cardElement = elements.create('card', { hidePostalCode: true });
+            var form = document.getElementById('payment-form-' + productId);
+            var paymentMethodSelect = document.getElementById('payment-method-' + productId);
+            var cardPayment = document.getElementById('card-payment-' + productId);
+            var paypalPayment = document.getElementById('paypal-payment-' + productId);
+            var mpesaPayment = document.getElementById('mpesa-payment-' + productId);
+
+            // Handle payment method changes
+            paymentMethodSelect.addEventListener('change', function() {
+                var paymentMethod = paymentMethodSelect.value;
+                cardPayment.style.display = paymentMethod === 'card' ? 'block' : 'none';
+                paypalPayment.style.display = paymentMethod === 'paypal' ? 'block' : 'none';
+                mpesaPayment.style.display = paymentMethod === 'mpesa' ? 'block' : 'none';
+                if (paymentMethod === 'card') {
+                    cardElement.mount('#card-element-' + productId);
+                } else {
+                    cardElement.unmount();
+                }
+            });
+
+            // Handle form submission
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                var paymentMethod = paymentMethodSelect.value;
+                var data = new FormData(form);
+                var payload = {};
+
+                data.forEach(function(value, key){
+                    payload[key] = value;
+                });
+
+                if (paymentMethod === 'card') {
+                    stripe.createToken(cardElement).then(function(result) {
+                        if (result.error) {
+                            document.getElementById('card-errors-' + productId).textContent = result.error.message;
+                        } else {
+                            payload['stripeToken'] = result.token.id;
+                            submitPayment(payload, productId);
+                        }
+                    });
+                } else {
+                    submitPayment(payload, productId);
+                }
+            });
+
+            function submitPayment(payload, productId) {
+                fetch('{{ url_for("main.handle_payment") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                }).then(response => response.json()).then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        if (payload['payment_method'] === 'card') {
+                            document.getElementById('card-errors-' + productId).textContent = data.error;
+                        } else {
+                            alert(data.error);
+                        }
+                    }
+                }).catch(error => {
+                    alert('An error occurred: ' + error.message);
+                });
+            }
+        })('{{ product.id }}');
+        {% endfor %}
+    });
+</script>
+
+{% endblock %}

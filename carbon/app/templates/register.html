@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <h1>Register</h1>
+    <form id="register-form" method="post" action="{{ url_for('main.register') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="email">Email address</label>
+            {{ form.email(class="form-control", id="email", placeholder="Enter email") }}
+            {% if form.email.errors %}
+                <div class="text-danger">
+                    {% for error in form.email.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            {{ form.password(class="form-control", id="password", placeholder="Password") }}
+            {% if form.password.errors %}
+                <div class="text-danger">
+                    {% for error in form.password.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm Password") }}
+            {% if form.confirm_password.errors %}
+                <div class="text-danger">
+                    {% for error in form.confirm_password.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="location">Location</label>
+            {{ form.location(class="form-control", id="location", placeholder="Enter location") }}
+            {% if form.location.errors %}
+                <div class="text-danger">
+                    {% for error in form.location.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="household_size">Household Size</label>
+            {{ form.household_size(class="form-control", id="household_size", placeholder="Enter household size") }}
+            {% if form.household_size.errors %}
+                <div class="text-danger">
+                    {% for error in form.household_size.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="vehicle_ownership">Vehicle Ownership</label>
+            {{ form.vehicle_ownership(class="form-control", id="vehicle_ownership", placeholder="Enter vehicle ownership status") }}
+            {% if form.vehicle_ownership.errors %}
+                <div class="text-danger">
+                    {% for error in form.vehicle_ownership.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="dietary_preference">Dietary Preference</label>
+            {{ form.dietary_preference(class="form-control", id="dietary_preference", placeholder="Enter dietary preference") }}
+            {% if form.dietary_preference.errors %}
+                <div class="text-danger">
+                    {% for error in form.dietary_preference.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    <div> 
+        <a href= "{{ url_for('main.login') }}">Already a User? LogIn Here.</a>
+
+    </div>
+{% endblock %}

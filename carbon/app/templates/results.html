@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Carbon Footprint Results</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Carbon Emissions</th>
+                <th>Transportation Mode</th>
+                <th>Transportation Distance</th>
+                <th>Fuel Type</th>
+                <th>Fuel Consumption</th>
+                <th>Electricity Usage</th>
+                <th>Water Usage</th>
+                <th>Food Consumption</th>
+                <th>Carbon Footprint Levy</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for footprint in footprints %}
+            <tr>
+                <td>{{ footprint.carbon_emissions }}</td>
+                <td>{{ footprint.transportation_mode }}</td>
+                <td>{{ footprint.transportation_distance }}</td>
+                <td>{{ footprint.transportation_fuel_type }}</td>
+                <td>{{ footprint.transportation_fuel_consumption }}</td>
+                <td>{{ footprint.electricity_usage }}</td>
+                <td>{{ footprint.water_usage }}</td>
+                <td>{{ footprint.food_consumption }}</td>
+                <td>${{ footprint.levy }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        <a href="{{ url_for('main.payment') }}" class="btn btn-primary">Proceed to Payment</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>User Profile</h1>
+        <table class="table table-striped">
+            <tr>
+                <th>Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>Location</th>
+                <td>{{ user.location }}</td>
+            </tr>
+            <tr>
+                <th>Household Size</th>
+                <td>{{ user.household_size }}</td>
+            </tr>
+            <tr>
+                <th>Vehicle Ownership</th>
+                <td>{{ user.vehicle_ownership }}</td>
+            </tr>
+            <tr>
+                <th>Dietary Preference</th>
+                <td>{{ user.dietary_preference }}</td>
+            </tr>
+            <tr>
+                <th>Date Joined</th>
+                <td>{{ user.date_joined.strftime('%Y-%m-%d') }}</td>
+            </tr>
+        </table>
+    </div>
+
+    
+    <a href="{{ url_for('main.edit_profile') }}" class="btn btn-secondary">Edit Profile</a>
+
+    
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Your Carbon Footprint Dashboard</h2>
+    
+    
+    <p class="text-center">Welcome, {{ current_user.username }}!</p>
+    
+    <form method="POST" action="{{ url_for('main.dashboard') }}" class= 'jumbotron'>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label class="form-label">Total Carbon Emissions (kg CO2e)</label>
+            {{ form.carbon_emissions(class="form-control", placeholder="Enter total carbon emissions in kg CO2e") }}
+            {% if form.carbon_emissions.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.carbon_emissions.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Transportation Mode</label>
+            {{ form.transportation_mode(class="form-control") }}
+            {% if form.transportation_mode.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.transportation_mode.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Transportation Distance (KM)</label>
+            {{ form.transportation_distance(class="form-control", placeholder="Enter transportation distance in KM") }}
+            {% if form.transportation_distance.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.transportation_distance.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Fuel Type</label>
+            {{ form.transportation_fuel_type(class="form-control") }}
+            {% if form.transportation_fuel_type.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.transportation_fuel_type.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Fuel Consumption (Litres)</label>
+            {{ form.transportation_fuel_consumption(class="form-control", placeholder="Enter fuel consumption in Litres") }}
+            {% if form.transportation_fuel_consumption.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.transportation_fuel_consumption.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Electricity Usage (kWh)</label>
+            {{ form.electricity_usage(class="form-control", placeholder="Enter electricity usage in kWh") }}
+            {% if form.electricity_usage.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.electricity_usage.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Water Usage (Litres)</label>
+            {{ form.water_usage(class="form-control", placeholder="Enter water usage in Litres") }}
+            {% if form.water_usage.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.water_usage.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Food Consumption Impact (kg CO2e)</label>
+            {{ form.food_consumption(class="form-control", placeholder="Enter food consumption impact in kg CO2e") }}
+            {% if form.food_consumption.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.food_consumption.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-success w-100">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
